@@ -1,0 +1,37 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/Zxin-Pro/unbounded-height/issues"
+
+[[mods]]
+modId = "unbounded_height"
+version = "1.0.0"
+displayName = "Unbounded Height"
+authors = "Zxin-Pro"
+logoFile = "icon.png"
+description = '''
+无界高度 Unbounded Height
+· 移除主世界 / 下界 / 末地的建筑高度限制（默认 Y=-2032..2031，可配置）
+· 自动为其他模组动态注册的新维度套用同样的高度范围
+· /height get|set|setall|reset|resetall|compat|reload 指令
+· 纯高度限制修改：不添加任何新物品、方块、实体
+配置：config/unbounded-height.json
+'''
+
+[[dependencies.unbounded_height]]
+modId = "neoforge"
+type = "required"
+versionRange = "[1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.unbounded_height]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.11,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+# 1.20.5+ 的推荐写法（jar 清单里的 MixinConfigs 属性同时保留，两条通道都不会重复应用）
+[[mixins]]
+config = "unbounded_height.mixins.json"
