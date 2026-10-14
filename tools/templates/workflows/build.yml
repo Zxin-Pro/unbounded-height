@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 先装「编译目标 JDK」，让 Gradle toolchain 能在 toolcache 里找到它
+      - name: Set up JDK {{JAVA}} (compile target)
+        if: ${{ '{{JAVA}}' != '{{BUILD_JAVA}}' }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '{{JAVA}}'
+
+      # 后装「Gradle 运行 JDK」，保证 JAVA_HOME 指向它
+      # （Fabric 的 Loom 1.18 自身要求 JVM 25，即使编译目标是 17/21）
+      - name: Set up JDK {{BUILD_JAVA}} (Gradle JVM)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '{{BUILD_JAVA}}'
+
+      - name: Show java
+        run: java -version
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build ({{LOADER}} {{MC}})
+        run: ./gradlew build --stacktrace --no-daemon
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unbounded-height-{{LOADER}}-{{MC}}
+          path: build/libs/*.jar
+          if-no-files-found: warn

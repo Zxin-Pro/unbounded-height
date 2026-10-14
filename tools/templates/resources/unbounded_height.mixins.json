@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.zxin.unboundedheight.mixin",
+  "compatibilityLevel": "{{MIXIN_COMPAT}}",
+//#if LOADER_FORGE
+  "refmap": "unbounded_height.refmap.json",
+//#endif
+  "mixins": [
+    "DimensionTypeMixin",
+    "ServerLevelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

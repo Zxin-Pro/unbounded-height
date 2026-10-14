@@ -1,0 +1,99 @@
+name: Build all versions
+
+# 总 workflow：用 matrix 同时 checkout 22 个版本分支并编译。
+# 每个分支自己也有 .github/workflows/build.yml，push 到该分支时会单独跑。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.branch }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        include:
+          - { branch: forge-1.20.1,    loader: forge,    mc: '1.20.1',  java: 17, build_java: 17 }
+          - { branch: forge-1.20.2,    loader: forge,    mc: '1.20.2',  java: 17, build_java: 17 }
+          - { branch: forge-1.20.4,    loader: forge,    mc: '1.20.4',  java: 17, build_java: 17 }
+          - { branch: neoforge-1.20.6, loader: neoforge, mc: '1.20.6',  java: 21, build_java: 21 }
+          - { branch: neoforge-1.21.1, loader: neoforge, mc: '1.21.1',  java: 21, build_java: 21 }
+          - { branch: neoforge-1.21.4, loader: neoforge, mc: '1.21.4',  java: 21, build_java: 21 }
+          - { branch: neoforge-1.21.8, loader: neoforge, mc: '1.21.8',  java: 21, build_java: 21 }
+          - { branch: neoforge-1.21.11, loader: neoforge, mc: '1.21.11', java: 21, build_java: 21 }
+          - { branch: neoforge-26.1,   loader: neoforge, mc: '26.1',    java: 25, build_java: 25 }
+          - { branch: neoforge-26.2,   loader: neoforge, mc: '26.2',    java: 25, build_java: 25 }
+          - { branch: neoforge-26.3,   loader: neoforge, mc: '26.3',    java: 25, build_java: 25 }
+          - { branch: fabric-1.20.1,   loader: fabric,   mc: '1.20.1',  java: 17, build_java: 25 }
+          - { branch: fabric-1.20.2,   loader: fabric,   mc: '1.20.2',  java: 17, build_java: 25 }
+          - { branch: fabric-1.20.4,   loader: fabric,   mc: '1.20.4',  java: 17, build_java: 25 }
+          - { branch: fabric-1.20.6,   loader: fabric,   mc: '1.20.6',  java: 21, build_java: 25 }
+          - { branch: fabric-1.21.1,   loader: fabric,   mc: '1.21.1',  java: 21, build_java: 25 }
+          - { branch: fabric-1.21.4,   loader: fabric,   mc: '1.21.4',  java: 21, build_java: 25 }
+          - { branch: fabric-1.21.8,   loader: fabric,   mc: '1.21.8',  java: 21, build_java: 25 }
+          - { branch: fabric-1.21.11,  loader: fabric,   mc: '1.21.11', java: 21, build_java: 25 }
+          - { branch: fabric-26.1,     loader: fabric,   mc: '26.1',    java: 25, build_java: 25 }
+          - { branch: fabric-26.2,     loader: fabric,   mc: '26.2',    java: 25, build_java: 25 }
+          - { branch: fabric-26.3,     loader: fabric,   mc: '26.3',    java: 25, build_java: 25 }
+    steps:
+      - name: Checkout ${{ matrix.branch }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+
+      # 先装「编译目标 JDK」
+      - name: Set up JDK ${{ matrix.java }} (compile target)
+        if: matrix.java != matrix.build_java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      # 后装「Gradle 运行 JDK」——Fabric 的 Loom 1.18 要求 JVM 25
+      - name: Set up JDK ${{ matrix.build_java }} (Gradle JVM)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.build_java }}
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        id: build
+        continue-on-error: true
+        run: ./gradlew build --stacktrace --no-daemon
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unbounded-height-${{ matrix.loader }}-${{ matrix.mc }}
+          path: build/libs/*.jar
+          if-no-files-found: warn
+
+      - name: Summarize
+        if: always()
+        run: |
+          {
+            echo "### ${{ matrix.branch }}"
+            echo ""
+            echo "- loader: \`${{ matrix.loader }}\` · mc: \`${{ matrix.mc }}\` · java: ${{ matrix.java }} (gradle jvm ${{ matrix.build_java }})"
+            echo "- result: **${{ steps.build.outcome }}**"
+            echo ""
+            ls -la build/libs/ 2>/dev/null || echo "no build/libs"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail job if build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1
