@@ -1,0 +1,10 @@
+{
+  "unboundedheight.msg.header": "无界高度 — 当前高度范围",
+  "unboundedheight.msg.none": "还没有登记任何维度。",
+  "unboundedheight.msg.changed": "已生效：%s",
+  "unboundedheight.msg.rejected": "已拒绝：%s",
+  "unboundedheight.msg.reloaded": "配置已重新载入。",
+  "unboundedheight.msg.reset": "已把 %s 恢复为默认高度。",
+  "unboundedheight.msg.usage": "用法：/height get|set|setall|reset|resetall|compat|reload",
+  "unboundedheight.msg.limits": "硬限制：min_y ≥ -2032，max_y ≤ 2031，总跨度 ≤ 4064（16 对齐）"
+}
