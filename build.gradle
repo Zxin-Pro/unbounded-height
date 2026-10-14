@@ -1,0 +1,60 @@
+plugins {
+    id 'java-library'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    // Mixin 的 Gradle 插件：提供 mixin { } 块 + refmap 生成
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = "unbounded-height-forge-${minecraft_version}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    // 1.20.x 官方映射；Mixin 里写 mojmap 名，由 refmap 在运行期重映射到 SRG
+    mappings channel: 'official', version: minecraft_version
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    // Mixin 注解处理器：没有它就不会生成 refmap，
+    // 而 Forge 1.20.x 运行期是 SRG 名 → @Inject(method="minY") 会解析失败
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+repositories {
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    maven { url = 'https://maven.minecraftforge.net/' }
+    mavenCentral()
+}
+
+// ── Mixin：生成 refmap（Forge 1.20.x 运行期是 SRG 名，1.20.1 尤其必须有）──
+// 命名遵循 Mixin 约定：<config>.mixins.json → <prefix>.refmap.json
+mixin {
+    add sourceSets.main, "${mod_id}.refmap.json"
+    config "${mod_id}.mixins.json"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+}
+
+jar {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_id,
+                'Specification-Vendor'    : 'Zxin-Pro',
+                'Specification-Version'   : '1',
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : project.version,
+                'Implementation-Vendor'   : 'Zxin-Pro',
+                // Forge/FML 通过清单属性发现 mixin 配置
+                'MixinConfigs'            : "${mod_id}.mixins.json"
+        ])
+    }
+}

@@ -1,0 +1,33 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://github.com/Zxin-Pro/unbounded-height/issues"
+
+[[mods]]
+modId="unbounded_height"
+version="1.0.0"
+displayName="Unbounded Height"
+authors="Zxin-Pro"
+logoFile="icon.png"
+description='''
+无界高度 Unbounded Height
+· 移除主世界 / 下界 / 末地的建筑高度限制（默认 Y=-2032..2031，可配置）
+· 自动为其他模组动态注册的新维度套用同样的高度范围
+· /height get|set|setall|reset|resetall|compat|reload 指令
+· 纯高度限制修改：不添加任何新物品、方块、实体
+配置：config/unbounded-height.json
+'''
+
+[[dependencies.unbounded_height]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.unbounded_height]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.4,1.21)"
+ordering="NONE"
+side="BOTH"
