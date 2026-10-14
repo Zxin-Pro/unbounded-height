@@ -1,0 +1,10 @@
+{
+  "unboundedheight.msg.header": "Unbounded Height — height limits",
+  "unboundedheight.msg.none": "No dimensions registered yet.",
+  "unboundedheight.msg.changed": "Applied: %s",
+  "unboundedheight.msg.rejected": "Rejected: %s",
+  "unboundedheight.msg.reloaded": "Configuration reloaded.",
+  "unboundedheight.msg.reset": "Reset %s to its default height.",
+  "unboundedheight.msg.usage": "Usage: /height get|set|setall|reset|resetall|compat|reload",
+  "unboundedheight.msg.limits": "Hard limits: min_y >= -2032, max_y <= 2031, total span <= 4064 (16-aligned)"
+}
