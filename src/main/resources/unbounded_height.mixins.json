@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.zxin.unboundedheight.mixin",
+  "compatibilityLevel": "JAVA_21",
+
+  "mixins": [
+    "DimensionTypeMixin",
+    "ServerLevelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

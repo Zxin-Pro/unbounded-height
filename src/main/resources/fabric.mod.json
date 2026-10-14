@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "unbounded_height",
+  "version": "1.0.0",
+  "name": "Unbounded Height",
+  "description": "移除主世界/下界/末地的高度限制，并自动为新注册的模组维度套用同样的高度范围。纯高度修改，不添加任何物品、方块或实体。",
+  "authors": [
+    "Zxin-Pro"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Zxin-Pro/unbounded-height",
+    "sources": "https://github.com/Zxin-Pro/unbounded-height",
+    "issues": "https://github.com/Zxin-Pro/unbounded-height/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/unboundedheight/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.zxin.unboundedheight.fabric.UnboundedHeightFabric"
+    ],
+    "client": [
+      "dev.zxin.unboundedheight.fabric.client.UnboundedHeightFabricClient"
+    ]
+  },
+  "mixins": [
+    "unbounded_height.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "minecraft": "[26.3,26.4)",
+    "java": ">=25"
+  }
+}
